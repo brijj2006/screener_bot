@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Shortlisting</title>
+</head>
+<body>
+    <h1>Resume Shortlisting Application</h1>
+    <a href="{{ url_for('train') }}">Train Model</a><br>
+    <a href="{{ url_for('predict') }}">Predict Shortlisting</a>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flashes">
+        {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>
