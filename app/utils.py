@@ -7,7 +7,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 import logging
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
