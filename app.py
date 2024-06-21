@@ -1,7 +1,8 @@
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash
 import os
-from app.forms import UploadForm
+from sklearn.pipeline import Pipeline
+from app.forms import TrainForm, PredictForm
 from app.utils import read_resume_file, train_model, save_pipeline, load_pipeline, predict_shortlisting
 
 app = Flask(__name__)
@@ -23,7 +24,7 @@ def home():
 
 @app.route('/train', methods=['GET', 'POST'])
 def train():
-    form = UploadForm(label=0)
+    form = TrainForm(label=0)
     if request.method == 'POST':
         logger.info('Form data: %s', request.form)
         if form.validate_on_submit():
@@ -44,8 +45,8 @@ def train():
                         logger.info('Insufficient samples for training')
                         return redirect(url_for('train'))
 
-                    model, vectorizer = train_model(resumes, labels)
-                    save_pipeline(model, 'models/trained_pipeline.pkl')
+                    pipeline = train_model(resumes, labels)
+                    save_pipeline(pipeline, 'models/trained_pipeline.pkl')
 
                     resumes.clear()
                     labels.clear()
@@ -69,7 +70,7 @@ def train():
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
-    form = UploadForm()
+    form = PredictForm()
     prediction = None
     if request.method == 'POST':
         logger.info('Form data: %s', request.form)
@@ -81,10 +82,18 @@ def predict():
                 file.save(file_path)
                 resume_text = read_resume_file(file_path)
                 if resume_text:
-                    model, vectorizer = load_pipeline('models/trained_pipeline.pkl')
-                    predictions = predict_shortlisting([resume_text], model, vectorizer)
-                    prediction = 'Shortlisted' if predictions[0] == 1 else 'Not Shortlisted'
-                    logger.info('Prediction made: %s', prediction)
+                    pipeline = load_pipeline('models/trained_pipeline.pkl')
+                    if isinstance(pipeline, Pipeline):
+                        predictions = predict_shortlisting([resume_text], pipeline)
+                        if predictions is not None:
+                            prediction = 'Shortlisted' if predictions[0] == 1 else 'Not Shortlisted'
+                            logger.info('Prediction made: %s', prediction)
+                        else:
+                            flash('Error during prediction.')
+                            logger.error('Prediction error.')
+                    else:
+                        flash('Error loading pipeline.')
+                        logger.error('Pipeline loading error.')
                 else:
                     flash('Error reading file.')
                     logger.error('Error reading file: %s', file.filename)
