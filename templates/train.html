@@ -6,28 +6,13 @@
     <title>Train Model</title>
 </head>
 <body>
-    <p><a href="{{ url_for('home') }}">Home</a></p>
-    <h1>Train Model</h1>
-    <form method="post" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.file.label }}<br>
-            {{ form.file }}
-        </p>
-        <p>
-            {{ form.label.label }}<br>
-            {{ form.label }}
-        </p>
-        <p>{{ form.submit }}</p>
-    </form>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+<h1>Train Model</h1>
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.file.label }} {{ form.file() }}<br>
+    {{ form.label.label }} {{ form.label() }}<br>
+    {{ form.submit() }}
+</form>
+<a href="{{ url_for('home') }}">Home</a>
 </body>
 </html>

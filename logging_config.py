@@ -20,7 +20,7 @@ def setup_logging():
             'file': {
                 'level': 'DEBUG',
                 'class': 'logging.FileHandler',
-                'filename': 'app.log',
+                'filename': 'logs/app.log',
                 'formatter': 'standard',
             },
         },

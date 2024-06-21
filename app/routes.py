@@ -1,16 +1,9 @@
-import logging
-from logging_config import setup_logging
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash
 import os
-from sklearn.pipeline import Pipeline
-from app.forms import TrainForm, PredictForm
-from app.utils import read_resume_file, train_model, save_pipeline, load_pipeline, predict_shortlisting
+import logging
+from .forms import TrainForm, PredictForm
+from .utils import read_resume_file, train_model, save_pipeline, load_pipeline, predict_shortlisting
 
-app = Flask(__name__)
-app.config.from_object('config.Config')
-app.secret_key = 'your_secret_key'
-
-setup_logging()  # Set up logging
 logger = logging.getLogger(__name__)
 
 # In-memory storage for resumes and labels
@@ -107,7 +100,3 @@ def predict():
             logger.info('Form validation failed')
             logger.info('Form errors: %s', form.errors)
     return render_template('predict.html', form=form, prediction=prediction)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
