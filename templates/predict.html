@@ -1,32 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<p><a href="{{ url_for('home') }}">Home</a></p>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Predict Shortlisting</title>
 </head>
 <body>
-    <h1>Predict Shortlisting</h1>
-    <form method="post" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.file.label }}<br>
-            {{ form.file }}
-        </p>
-        <p>{{ form.submit }}</p>
-    </form>
-    {% if prediction %}
-        <h2>Prediction Result: {{ prediction }}</h2>
-    {% endif %}
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+<h1>Predict Shortlisting</h1>
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.file.label }} {{ form.file() }}<br>
+    {{ form.submit() }}
+</form>
+{% if prediction %}
+<h2>Prediction: {{ prediction }}</h2>
+{% endif %}
+<a href="{{ url_for('home') }}">Home</a>
 </body>
 </html>
