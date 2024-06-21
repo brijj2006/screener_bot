@@ -1,4 +1,5 @@
 import logging
+from logging_config import setup_logging
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 from sklearn.pipeline import Pipeline
@@ -9,7 +10,7 @@ app = Flask(__name__)
 app.config.from_object('config.Config')
 app.secret_key = 'your_secret_key'
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+setup_logging()  # Set up logging
 logger = logging.getLogger(__name__)
 
 # In-memory storage for resumes and labels
