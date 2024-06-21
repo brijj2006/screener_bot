@@ -1,20 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Resume Shortlisting</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
 </head>
 <body>
-    <h1>Resume Shortlisting Application</h1>
-    <a href="{{ url_for('train') }}">Train Model</a><br>
-    <a href="{{ url_for('predict') }}">Predict Shortlisting</a>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul class="flashes">
-        {% for category, message in messages %}
-            <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-    {% endwith %}
+    <h1>Resume Shortlisting System</h1>
+    <p><a href="{{ url_for('train') }}">Train Model</a></p>
+    <p><a href="{{ url_for('predict') }}">Predict Shortlisting</a></p>
 </body>
 </html>

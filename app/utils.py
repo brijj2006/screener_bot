@@ -1,50 +1,81 @@
 import os
+from PyPDF2 import PdfReader
+import docx
 import joblib
-import PyPDF2
-from docx import Document
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import classification_report
+import logging
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def read_resume_file(file_path):
     if file_path.endswith('.pdf'):
-        return read_pdf(file_path)
+        return extract_text_from_pdf(file_path)
     elif file_path.endswith('.docx'):
-        return read_docx(file_path)
-    return None
+        return extract_text_from_docx(file_path)
+    else:
+        return None
 
-
-def read_pdf(file_path):
-    text = ''
-    with open(file_path, 'rb') as f:
-        reader = PyPDF2.PdfReader(f)
+def extract_text_from_pdf(file_path):
+    try:
+        reader = PdfReader(file_path)
+        text = ''
         for page in reader.pages:
             text += page.extract_text()
-    return text
+        return text
+    except Exception as e:
+        logger.error(f"Error extracting text from PDF: {e}")
+        return None
 
+def extract_text_from_docx(file_path):
+    try:
+        doc = docx.Document(file_path)
+        text = ''
+        for paragraph in doc.paragraphs:
+            text += paragraph.text + '\n'
+        return text.strip()
+    except Exception as e:
+        logger.error(f"Error extracting text from DOCX: {e}")
+        return None
 
-def read_docx(file_path):
-    doc = Document(file_path)
-    return '\n'.join([p.text for p in doc.paragraphs])
-
-
-def train_model(X, y):
-    vectorizer = TfidfVectorizer()
-    X_vect = vectorizer.fit_transform(X)
+def train_model(X_train, y_train):
+    tfidf_vectorizer = TfidfVectorizer(max_features=1000)
     model = LogisticRegression()
-    model.fit(X_vect, y)
-    return model, vectorizer
 
+    pipeline = Pipeline([
+        ('tfidf', tfidf_vectorizer),
+        ('clf', model)
+    ])
 
-def save_pipeline(model, vectorizer, file_path):
-    joblib.dump({'model': model, 'vectorizer': vectorizer}, file_path)
+    pipeline.fit(X_train, y_train)
+    logger.info("Model trained successfully.")
+    return pipeline
 
+def save_pipeline(pipeline, file_path):
+    try:
+        joblib.dump(pipeline, file_path)
+        logger.info(f"Pipeline saved to {file_path}.")
+    except Exception as e:
+        logger.error(f"Error saving pipeline: {e}")
 
 def load_pipeline(file_path):
-    pipeline = joblib.load(file_path)
-    return pipeline['model'], pipeline['vectorizer']
+    try:
+        pipeline = joblib.load(file_path)
+        logger.info(f"Pipeline loaded from {file_path}.")
+        return pipeline
+    except Exception as e:
+        logger.error(f"Error loading pipeline: {e}")
+        return None
 
+def predict_shortlisting(resumes, pipeline):
+    try:
+        predictions = pipeline.predict(resumes)
+        return predictions
+    except Exception as e:
+        logger.error(f"Error during prediction: {e}")
+        return None
 
-def predict_shortlisting(resumes, model, vectorizer):
-    X_vect = vectorizer.transform(resumes)
-    return model.predict(X_vect)
