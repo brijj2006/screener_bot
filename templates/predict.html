@@ -1,32 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-<p><a href="{{ url_for('home') }}">Home</a></p>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Predict Shortlisting</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar-brand, .nav-link {
+            color: #f8f9fa !important;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .form-group label {
+            font-weight: 500;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .home-btn {
+            margin-top: 20px;
+        }
+        /* Custom styles for prediction result */
+        .prediction-shortlisted {
+            background-color: #d4edda; /* Light Green color */
+            color: #155724; /* Dark Green text color */
+        }
+        .prediction-not-shortlisted {
+            background-color: #f8d7da; /* Light Red color */
+            color: #721c24; /* Dark Red text color */
+        }
+        .prediction-result {
+            font-size: x-large; /* Adjust the value as needed */
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Predict Shortlisting</h1>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="/">Resume Shortlisting</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/train">Train Model</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/predict">Predict Shortlisting</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <h1 class="text-center">Predict Shortlisting</h1>
     <form method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.file.label }}<br>
-            {{ form.file }}
-        </p>
-        <p>{{ form.submit }}</p>
+        <div class="form-group">
+            {{ form.file.label(class="form-label") }}
+            {{ form.file(class="form-control") }}
+        </div>
+        <div class="form-group text-center">
+            {{ form.submit(class="btn btn-primary") }}
+            <a class="btn btn-secondary" href="/">Home</a>
+        </div>
     </form>
     {% if prediction %}
-        <h2>Prediction Result: {{ prediction }}</h2>
+    <h2 class="text-center mt-3 {% if prediction == 'Shortlisted' %}prediction-shortlisted{% else %}prediction-not-shortlisted{% endif %} prediction-result">
+        Prediction Result: {{ prediction }}
+    </h2>
     {% endif %}
     {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+    {% if messages %}
+    <div class="alert alert-warning mt-3">
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     {% endwith %}
+    {% if errors %}
+    <div class="alert alert-danger mt-3">
+        <ul>
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

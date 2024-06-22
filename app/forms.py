@@ -1,14 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import FileField, IntegerField, SubmitField
-from wtforms.validators import InputRequired, NumberRange
+from wtforms import FileField, SelectField, SubmitField
+from wtforms.validators import InputRequired
 
 
 class TrainForm(FlaskForm):
     file = FileField('Resume File', validators=[InputRequired()])
-    label = IntegerField('Label (0 or 1)', validators=[InputRequired(), NumberRange(min=0, max=1)])
-    submit = SubmitField('Train')
+    label = SelectField('Label', choices=[('0', '0'), ('1', '1')], validators=[InputRequired()])
+    submit = SubmitField('Submit')
 
 
 class PredictForm(FlaskForm):
     file = FileField('Resume File', validators=[InputRequired()])
-    submit = SubmitField('Predict')
+    submit = SubmitField('Submit')

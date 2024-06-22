@@ -42,7 +42,7 @@ def train():
                     labels.append(label)
 
                     if len(set(labels)) < 2:
-                        flash('Need more samples for both classes (0 and 1) before training.')
+                        flash('Need more samples for both classes (0 and 1) before training.', 'info')
                         logger.info('Insufficient samples for training')
                         return redirect(url_for('train'))
 
@@ -52,18 +52,21 @@ def train():
                     resumes.clear()
                     labels.clear()
 
-                    flash('Training complete.')
+                    flash('Training complete.', 'success')
                     logger.info('Training completed successfully')
                     return redirect(url_for('home'))
                 else:
-                    flash('Error reading file.')
+                    flash('Error reading file.', 'danger')
                     logger.error('Error reading file: %s', file.filename)
                     return redirect(url_for('train'))
             else:
-                flash('Error: Please upload a PDF or DOCX file.')
+                flash('Error: Please upload a PDF or DOCX file.', 'danger')
                 logger.error('Invalid file type: %s', file.filename)
                 return redirect(url_for('train'))
         else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(f'Error in {getattr(form, field).label.text}: {error}', 'danger')
             logger.info('Form validation failed')
             logger.info('Form errors: %s', form.errors)
     return render_template('train.html', form=form)
