@@ -1,6 +1,7 @@
 import logging
 from logging_config import setup_logging
 from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_wtf import CSRFProtect
 import os
 from sklearn.pipeline import Pipeline
 from app.forms import TrainForm, PredictForm
@@ -8,7 +9,8 @@ from app.utils import read_resume_file, train_model, save_pipeline, load_pipelin
 
 app = Flask(__name__)
 app.config.from_object('config.Config')
-app.secret_key = 'your_secret_key'
+app.secret_key = app.config['SECRET_KEY']
+csrf = CSRFProtect(app)
 
 setup_logging()  # Set up logging
 logger = logging.getLogger(__name__)
